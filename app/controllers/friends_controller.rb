@@ -19,7 +19,20 @@ class FriendsController < ApplicationController
         render json: friendship_error, status: :unprocessable_entity
       end
     else
-      render json: invalid_params_message, status: :unprocessable_entity
+      render json: invalid_email_number, status: :unprocessable_entity
+    end
+  end
+
+  # GET /friends/common
+  def show
+    if has_two_email?
+      u1 = User.find_or_create_by(email: friend_params.first)
+      u2 = User.find_or_create_by(email: friend_params.last)
+      @friends_emails = u1.common_friends_with(u2)
+
+      render json: friend_list_response
+    else
+      render json: invalid_email_number, status: :unprocessable_entity
     end
   end
 
@@ -33,7 +46,7 @@ class FriendsController < ApplicationController
       friend_params.uniq.length == 2
     end
 
-    def invalid_params_message
+    def invalid_email_number
       {
         success: false,
         messages: ['Please send 2 emails as body params']

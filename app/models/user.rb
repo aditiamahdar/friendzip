@@ -36,4 +36,16 @@ class User < ApplicationRecord
     relation = get_relation(user.id)
     relation.befriend!
   end
+
+  def friends_ids
+    friends_relations.pluck(:target_user_id)
+  end
+
+  def common_ids(user)
+    self.friends_ids & user.friends_ids
+  end
+
+  def common_friends_with(user)
+    User.where(id: common_ids(user)).pluck(:email)
+  end
 end
