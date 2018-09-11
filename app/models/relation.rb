@@ -34,4 +34,8 @@ class Relation < ApplicationRecord
   def subscribe!
     self.update(subscribe: true)
   end
+
+  def block!
+    self.update(block: true)
+  end
 end

@@ -27,12 +27,12 @@ class User < ApplicationRecord
     user.add_friend_relation(self)
   end
 
-  def get_relation(user_id)
-    relations.find_or_create_by(target_user_id: user_id)
+  def get_relation(user)
+    relations.find_or_create_by(target_user_id: user.id)
   end
 
   def add_friend_relation(user)
-    get_relation(user.id).befriend!
+    get_relation(user).befriend!
   end
 
   def friends_ids
@@ -48,6 +48,10 @@ class User < ApplicationRecord
   end
 
   def subscribe(user)
-    get_relation(user.id).subscribe!
+    get_relation(user).subscribe!
+  end
+
+  def block(user)
+    get_relation(user).block!
   end
 end

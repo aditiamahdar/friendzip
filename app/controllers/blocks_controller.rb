@@ -1,7 +1,7 @@
-class SubscribesController < ApplicationController
-  # POST /subscribes
+class BlocksController < ApplicationController
+  # POST /blocks
   def create
-    if can_subscribe?
+    if can_block?
       render json: success_response
     else
       render json: errors_response, status: :unprocessable_entity
@@ -25,9 +25,9 @@ class SubscribesController < ApplicationController
       @target ||= User.find_or_create_by(email: target_params)
     end
 
-    def can_subscribe?
+    def can_block?
       if requestor.persisted? && target.persisted?
-        requestor.subscribe(target)
+        requestor.block(target)
       else
         @errors = requestor.errors.full_messages + target.errors.full_messages
         return false
