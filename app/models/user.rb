@@ -25,7 +25,6 @@ class User < ApplicationRecord
   def add_friend(user)
     add_friend_relation(user)
     user.add_friend_relation(self)
-    true
   end
 
   def get_relation(user_id)
@@ -33,8 +32,7 @@ class User < ApplicationRecord
   end
 
   def add_friend_relation(user)
-    relation = get_relation(user.id)
-    relation.befriend!
+    get_relation(user.id).befriend!
   end
 
   def friends_ids
@@ -47,5 +45,9 @@ class User < ApplicationRecord
 
   def common_friends_with(user)
     User.where(id: common_ids(user)).pluck(:email)
+  end
+
+  def subscribe(user)
+    get_relation(user.id).subscribe!
   end
 end

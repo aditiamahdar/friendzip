@@ -6,7 +6,7 @@ class FriendsController < ApplicationController
       render json: friend_list_response
     else
       @errors = @user.errors.full_messages
-      render json: friendship_error, status: :unprocessable_entity
+      render json: errors_response, status: :unprocessable_entity
     end
   end
 
@@ -14,9 +14,9 @@ class FriendsController < ApplicationController
   def create
     if has_two_email?
       if can_be_friend?
-        render json: {success: true}
+        render json: success_response
       else
-        render json: friendship_error, status: :unprocessable_entity
+        render json: errors_response, status: :unprocessable_entity
       end
     else
       render json: invalid_email_number, status: :unprocessable_entity
@@ -66,13 +66,6 @@ class FriendsController < ApplicationController
           return false
         end
       end
-    end
-
-    def friendship_error
-      {
-        success: false,
-        messages: @errors.uniq
-      }
     end
 
     def friends_emails

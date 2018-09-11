@@ -30,4 +30,8 @@ class Relation < ApplicationRecord
   def befriend!
     self.update(friend: true)
   end
+
+  def subscribe!
+    self.update(subscribe: true)
+  end
 end
