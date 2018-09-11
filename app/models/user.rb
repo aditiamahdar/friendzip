@@ -13,14 +13,30 @@
 #
 
 class User < ApplicationRecord
+  TARGET_OPTIONS = {
+    class_name: 'Relation',
+    foreign_key: :target_user_id
+  }
+
+  RELATION_OPTIONS = { class_name: 'Relation' }
+
   validates :email, presence: true, uniqueness: true
   validates :email, format: { with: /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\z/i }
 
+  with_options TARGET_OPTIONS do
+    has_many :target_relations
+    has_many :subscribes_target_relations, -> { is_subscribe }
+  end
+
+  with_options RELATION_OPTIONS do
+    has_many :friends_relations, -> { is_friend }
+    has_many :subscribes_relations, -> { is_subscribe }
+    has_many :blocks_relations, -> { is_block }
+  end
+
   has_many :relations
-  has_many :friends_relations, -> { where(friend: true) }, class_name: 'Relation'
   has_many :friends, through: :friends_relations, source: :target_user
-  has_many :subscribes_relations, -> { where(subscribe: true) }, class_name: 'Relation'
-  has_many :blocks_relations, -> { where(block: true) }, class_name: 'Relation'
+  has_many :subscribers, through: :subscribes_target_relations, source: :user
 
   def add_friend(user)
     add_friend_relation(user)
@@ -39,6 +55,10 @@ class User < ApplicationRecord
     friends_relations.pluck(:target_user_id)
   end
 
+  def subscribers_ids
+    subscribes_target_relations.pluck(:user_id)
+  end
+
   def common_ids(user)
     self.friends_ids & user.friends_ids
   end
@@ -53,5 +73,21 @@ class User < ApplicationRecord
 
   def block(user)
     get_relation(user).block!
+  end
+
+  def mention_emails(text)
+    text.scan(/\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/i)
+  end
+
+  def mention_condition(text)
+    User.where(email: mention_emails(text))
+  end
+
+  def recipient_ids
+    friends_ids | subscribers_ids
+  end
+
+  def recipients_of(text)
+    User.where(id: recipient_ids).or(mention_condition(text)).pluck(:email)
   end
 end

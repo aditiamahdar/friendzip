@@ -27,6 +27,10 @@ class Relation < ApplicationRecord
   validates :user_id, :target_user_id, presence: true
   validates :user_id, uniqueness: {scope: :target_user_id}
 
+  scope :is_subscribe, -> { where(subscribe: true, block: [false, nil]) }
+  scope :is_friend, -> { where(friend: true, block: [false, nil]) }
+  scope :is_block, -> { where(block: true) }
+
   def befriend!
     self.update(friend: true)
   end
