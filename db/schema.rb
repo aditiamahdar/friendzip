@@ -12,9 +12,12 @@
 
 ActiveRecord::Schema.define(version: 2018_09_11_103809) do
 
+  # These are extensions that must be enabled in order to support this database
+  enable_extension "plpgsql"
+
   create_table "relations", force: :cascade do |t|
-    t.integer "user_id"
-    t.integer "target_user_id"
+    t.bigint "user_id"
+    t.bigint "target_user_id"
     t.boolean "friend"
     t.boolean "subscribe"
     t.boolean "block"
@@ -34,4 +37,6 @@ ActiveRecord::Schema.define(version: 2018_09_11_103809) do
     t.index ["email"], name: "index_users_on_email"
   end
 
+  add_foreign_key "relations", "users", column: "target_user_id", on_delete: :cascade
+  add_foreign_key "relations", "users", on_delete: :cascade
 end

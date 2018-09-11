@@ -19,6 +19,11 @@
 #  index_relations_on_target_user_id  (target_user_id)
 #  index_relations_on_user_id         (user_id)
 #
+# Foreign Keys
+#
+#  fk_rails_...  (target_user_id => users.id) ON DELETE => cascade
+#  fk_rails_...  (user_id => users.id) ON DELETE => cascade
+#
 
 class Relation < ApplicationRecord
   belongs_to :user
