@@ -1,11 +1,22 @@
 class FriendsController < ApplicationController
+  # GET /friends
+  def index
+    @user = User.find_or_create_by(email: params[:email])
+    if @user.persisted?
+      render json: friend_list_response
+    else
+      @errors = @user.errors.full_messages
+      render json: friendship_error, status: :unprocessable_entity
+    end
+  end
+
   # POST /friends
   def create
     if has_two_email?
       if can_be_friend?
         render json: {success: true}
       else
-        render json: friendship_error
+        render json: friendship_error, status: :unprocessable_entity
       end
     else
       render json: invalid_params_message, status: :unprocessable_entity
@@ -48,6 +59,18 @@ class FriendsController < ApplicationController
       {
         success: false,
         messages: @errors.uniq
+      }
+    end
+
+    def friends_emails
+      @friends_emails ||= @user.friends.pluck(:email)
+    end
+
+    def friend_list_response
+      {
+        success: true,
+        friends: friends_emails,
+        count: friends_emails.length
       }
     end
 end

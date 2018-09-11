@@ -17,6 +17,10 @@ class User < ApplicationRecord
   validates :email, format: { with: /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\z/i }
 
   has_many :relations
+  has_many :friends_relations, -> { where(friend: true) }, class_name: 'Relation'
+  has_many :friends, through: :friends_relations, source: :target_user
+  has_many :subscribes_relations, -> { where(subscribe: true) }, class_name: 'Relation'
+  has_many :blocks_relations, -> { where(block: true) }, class_name: 'Relation'
 
   def add_friend(user)
     add_friend_relation(user)
