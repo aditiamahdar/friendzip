@@ -26,4 +26,8 @@ class Relation < ApplicationRecord
 
   validates :user_id, :target_user_id, presence: true
   validates :user_id, uniqueness: {scope: :target_user_id}
+
+  def befriend!
+    self.update(friend: true)
+  end
 end
