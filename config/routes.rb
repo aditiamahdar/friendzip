@@ -1,9 +1,12 @@
 Rails.application.routes.draw do
-  resources :updates
-  resources :blocks
-  resources :subscribes
-  resources :friends
-  resources :relations
-  resources :users
-  # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
+  resources :updates, only: :create
+  resources :blocks, only: :create do
+    collection { delete '/', action: :destroy }
+  end
+  resources :subscribes, only: :create do
+    collection { delete '/', action: :destroy }
+  end
+  resources :friends, except: [:update, :destroy] do
+    collection { delete '/', action: :destroy }
+  end
 end
